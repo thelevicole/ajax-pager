@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.0.3
+ * Simple jQuery plugin for handling ajax paging v0.1.0
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -104,6 +104,19 @@
 		 * @return	{integer}
 		 */
 		self.currentPage = function() {
+			return current_page;
+		};
+
+		/**
+		 * Manually override the current page count
+		 *
+		 * @param	{integer}	page
+		 * @return	{integer}
+		 */
+		self.setPage = function( page ) {
+			if ( parseInt( page ) ) {
+				current_page = parseInt( page );
+			}
 			return current_page;
 		};
 
