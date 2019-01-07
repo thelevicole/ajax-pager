@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.3.1
+ * Simple jQuery plugin for handling ajax paging v0.3.2
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -127,6 +127,16 @@
 				current_page = parseInt( page );
 			}
 			return current_page;
+		};
+
+		/**
+		 * Update the initial options
+		 * 
+		 * @param	{object}	updated
+		 * @return	{void}
+		 */
+		self.updateOptions = function( updated ) {
+			options = $.extend( true, options, updated );
 		};
 
 		/* On initialize
