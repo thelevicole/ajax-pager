@@ -6,9 +6,9 @@
 
 ## Quick start
 
-**1.** Download and include the plugin 
+**1.** Include the plugin via jsDelivr CDN 
 ```html
-<script src=“ajax-pager.js”></script>
+<script src=“https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@0.0.1/dist/ajax-pager.js”></script>
 ```
 **2.** Attach to an element
 ```javascript
