@@ -31,7 +31,7 @@
 		 */
 		const trigger = ( event_name, ...args ) => {
 			self.trigger( `ap-${event_name}`, ...args );
-		}
+		};
 
 		/**
 		 * Merge plugin data with data passed in options
@@ -109,7 +109,13 @@
 
 		/* On initialize
 		-------------------------------------------------------- */
-		self.loadMore();
+		// Todo - fix initial trigger event
+		// ================================
+		// The initial `before_request` event is not triggered because
+		// it is sent before returning `self`.
+		// A quick fix has been applied by delaying the init function
+		// by 10ms.
+		setTimeout( () => self.loadMore(), 10 );
 
 		return self;
 	};
