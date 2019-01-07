@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.1.0
+ * Simple jQuery plugin for handling ajax paging v0.1.1
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -49,11 +49,11 @@
 		 *
 		 * @return {void}
 		 */
-		const send_request = () => {
+		const send_request = ( ...args ) => {
 
 			if ( self.hasMore() ) {
 
-				trigger( 'before_request' );
+				trigger( 'before_request', ...args );
 
 				$.ajax( {
 					method: 'POST',
@@ -62,15 +62,15 @@
 				} ).then( function( data, textStatus, jqXHR ) {
 
 					current_page++;
-					trigger( 'request_successful', data, textStatus, jqXHR );
+					trigger( 'request_successful', data, textStatus, jqXHR, ...args );
 
 				}, function( jqXHR, textStatus, errorThrown ) {
 
-					trigger( 'request_failed', jqXHR, textStatus, errorThrown );
+					trigger( 'request_failed', jqXHR, textStatus, errorThrown, ...args );
 
 				} ).always( function() {
 
-					trigger( 'after_request' );
+					trigger( 'after_request', ...args );
 
 				} );
 
@@ -85,8 +85,8 @@
 		 *
 		 * @return	{void}
 		 */
-		self.loadMore = function() {
-			send_request();
+		self.loadMore = function( ...args ) {
+			send_request( ...args );
 		};
 
 		/**
