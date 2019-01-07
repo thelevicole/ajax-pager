@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.3.0
+ * Simple jQuery plugin for handling ajax paging v0.3.1
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -123,7 +123,9 @@
 		 * @return	{integer}			The current page number
 		 */
 		self.setPage = function( page ) {
-			current_page = parseInt( page ) || current_page;
+			if ( !isNaN( page ) ) {
+				current_page = parseInt( page );
+			}
 			return current_page;
 		};
 
