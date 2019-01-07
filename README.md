@@ -29,7 +29,7 @@ $( '#load' ).on( 'click', function() {
     $gallery.loadMore();
 } );
 
-$gallery.on( 'ap-request_successful', function( data ) {
-    $gallery.append( data.html );
+$gallery.on( 'ap-request_successful', function( event, response ) {
+    $gallery.append( response.html );
 } );
 ```
