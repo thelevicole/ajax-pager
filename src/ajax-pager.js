@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.2.0
+ * Simple jQuery plugin for handling ajax paging v0.3.0
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -112,7 +112,7 @@
 		 * 
 		 * @return	{integer}	Returns the page number ( 0 )
 		 */
-		self.reset = function() {
+		self.resetPage = function() {
 			return self.setPage( 0 );
 		};
 
@@ -123,15 +123,13 @@
 		 * @return	{integer}			The current page number
 		 */
 		self.setPage = function( page ) {
-			if ( parseInt( page ) ) {
-				current_page = parseInt( page );
-			}
+			current_page = parseInt( page ) || current_page;
 			return current_page;
 		};
 
 		/* On initialize
 		-------------------------------------------------------- */
-		self.reset( 0 );
+		self.resetPage();
 
 		// Todo - fix initial trigger event
 		// ================================
