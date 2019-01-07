@@ -1,5 +1,5 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.1.1
+ * Simple jQuery plugin for handling ajax paging v0.2.0
  * 
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -108,10 +108,19 @@
 		};
 
 		/**
+		 * Reset the counter
+		 * 
+		 * @return	{integer}	Returns the page number ( 0 )
+		 */
+		self.reset = function() {
+			return self.setPage( 0 );
+		};
+
+		/**
 		 * Manually override the current page count
 		 *
 		 * @param	{integer}	page
-		 * @return	{integer}
+		 * @return	{integer}			The current page number
 		 */
 		self.setPage = function( page ) {
 			if ( parseInt( page ) ) {
@@ -122,6 +131,8 @@
 
 		/* On initialize
 		-------------------------------------------------------- */
+		self.reset( 0 );
+
 		// Todo - fix initial trigger event
 		// ================================
 		// The initial `before_request` event is not triggered because
