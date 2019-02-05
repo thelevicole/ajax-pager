@@ -1,6 +1,6 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.3.2
- * 
+ * Simple jQuery plugin for handling ajax paging v0.3.3
+ *
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
@@ -10,7 +10,17 @@
 	$.fn.ajaxPager = function( options ) {
 		const self = this;
 
+		/**
+		 * Track current page number
+		 * @type {Number}
+		 */
 		let current_page = 0;
+
+		/**
+		 * Check if request has already been made
+		 * @type {Boolean}
+		 */
+		let running = false;
 
 		/**
 		 * Merge user settings with defaults
@@ -53,26 +63,32 @@
 
 			if ( self.hasMore() ) {
 
-				trigger( 'before_request', ...args );
+				if ( !running ) {
+					running = true;
 
-				$.ajax( {
-					method: 'POST',
-					url: options.url,
-					data: data_to_send()
-				} ).then( function( data, textStatus, jqXHR ) {
+					trigger( 'before_request', ...args );
 
-					current_page++;
-					trigger( 'request_successful', data, textStatus, jqXHR, ...args );
+					$.ajax( {
+						method: 'POST',
+						url: options.url,
+						data: data_to_send()
+					} ).then( function( data, textStatus, jqXHR ) {
 
-				}, function( jqXHR, textStatus, errorThrown ) {
+						current_page++;
+						trigger( 'request_successful', data, textStatus, jqXHR, ...args );
 
-					trigger( 'request_failed', jqXHR, textStatus, errorThrown, ...args );
+					}, function( jqXHR, textStatus, errorThrown ) {
 
-				} ).always( function() {
+						trigger( 'request_failed', jqXHR, textStatus, errorThrown, ...args );
 
-					trigger( 'after_request', ...args );
+					} ).always( function() {
 
-				} );
+						running = false;
+
+						trigger( 'after_request', ...args );
+
+					} );
+				}
 
 			}
 		};
@@ -109,7 +125,7 @@
 
 		/**
 		 * Reset the counter
-		 * 
+		 *
 		 * @return	{integer}	Returns the page number ( 0 )
 		 */
 		self.resetPage = function() {
@@ -130,13 +146,30 @@
 		};
 
 		/**
+		 * Update the initial post data
+		 *
+		 * @param	{object}	updated
+		 * @return	{void}
+		 */
+		self.updatePayload = function( updated ) {
+			options.data = $.extend( options.data, updated );
+		};
+
+		/**
 		 * Update the initial options
-		 * 
+		 *
 		 * @param	{object}	updated
 		 * @return	{void}
 		 */
 		self.updateOptions = function( updated ) {
-			options = $.extend( true, options, updated );
+			// Preserve payload
+			const data = options.data;
+
+			// Update opitons
+			options = $.extend( options, updated );
+
+			// Restore preserved payload
+			self.updatePayload( data );
 		};
 
 		/* On initialize
@@ -153,5 +186,5 @@
 
 		return self;
 	};
-	
+
 })(jQuery || window.jQuery);
