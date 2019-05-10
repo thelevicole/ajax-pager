@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Simplified jQuery ajax pagination by Levi Cole</title>
+	<meta name="description" content="">
+
+	<meta property="og:title" content="Simplified jQuery ajax pagination by Levi Cole">
+	<meta property="og:site_name" content="">
+	<meta property="og:description" content="">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://thelevicole.com/ajax-pager/">
+	<meta property="og:image" content="">
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="https://thelevicole.com/ajax-pager/" />
+	<meta name="twitter:title" content="Simplified jQuery ajax pagination by Levi Cole">
+	<meta name="twitter:description" content="">
+	<meta name="twitter:image" content="">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+	<link rel="stylesheet" href="css/home.css?v=1.2.0">
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script src=“https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@0.3.3/dist/ajax-pager.js”></script>
+</head>
+<body>
+
+	<section class="py-5 bg-primary text-white">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col my-5">
+					<h1>Simplified jQuery ajax pagination</h1>
+					<p>Easily rig a custom DOM for ajax pagination requests.</p>
+					<p class="alert alert-warning">⚠️ This project is very much a work in progress and should not be used in production.</p>
+				</div>
+				<div class="col-3">
+					<div class="list-group">
+						<a href="#requirements" class="list-group-item">1. Requirements</a>
+						<a href="#usage" class="list-group-item">2. Basic usage</a>
+						<a href="#events" class="list-group-item">3. Events &amp; Methods</a>
+						<a href="#examples" class="list-group-item disabled">4. Examples <small>(coming soon)</small></a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-5 bg-light" id="requirements">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col my-5">
+					<h2>Requirements</h2>
+					<p>This library has been built and tested with <strong>jQuery 3 and up</strong>.</p>
+					<p><a href="https://jquery.com/download/" target="_blank" rel="nofollow noopener">Download here &raquo;</a></p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-5" id="usage">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col my-5">
+					<h2 class="mb-5">Basic usage</h2>
+					<p><strong>1.</strong> Include the library via jsDelivr CDN</p>
+					<div class="mb-5">
+						<pre><code class="lang-markup">&lt;script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@0.3.3/dist/ajax-pager.js"&gt;&lt;/script&gt;</code></pre>
+					</div>
+
+					<p><strong>2.</strong> Attach to an element</p>
+					<div class="mb-5">
+						<pre><code class="lang-js">var $gallery = $( '#gallery' ).ajaxPager( {
+    url: 'https://example.com/api/gallery',
+    totalPages: 10,
+    data: { /* ..additional data to send with request.. */ }
+} );</code></pre>
+					</div>
+
+					<p><strong>3.</strong> Rig the DOM</p>
+					<pre><code class="lang-markup">&lt;div id="gallery"&gt;&lt;/div&gt;
+&lt;button id="load"&gt;Load more&lt;/button&gt;</code></pre>
+					<pre><code class="lang-js">$( '#load' ).on( 'click', function() {
+    $gallery.loadMore();
+} );
+
+$gallery.on( 'ap-request_successful', function( event, response ) {
+    $gallery.append( response.html );
+} );</code></pre>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-5 bg-light" id="events">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col my-5">
+					<h2 class="mb-5">Events &amp; Methods</h2>
+
+					<div class="table-responsive">
+						<table class="table table-bordered bg-white small">
+							<thead>
+								<tr>
+									<th class="w-25">Name</th>
+									<th>Description</th>
+									<th>Example</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="bg-secondary text-white">
+									<td colspan="3">
+										<strong>Events</strong>
+									</td>
+								</tr>
+								<tr>
+									<td><code>'ap-before_request'</code></td>
+									<td>
+										Fired before a request is made. Useful for showing a loading icon.
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.on( 'ap-before_request', function() {
+	$( '#loading' ).show();
+} );</code></pre><br>
+									</td>
+								</tr>
+								<tr>
+									<td><code>'ap-request_successful'</code></td>
+									<td>
+										Fired right after a request has successully completed.
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.on( 'ap-request_successful', function( event, data, textStatus, jqXHR ) {
+	$gallery.append( data.html );
+} );</code></pre><br>
+									</td>
+								</tr>
+								<tr>
+									<td><code>'ap-request_failed'</code></td>
+									<td>
+										Fired if a request failed.
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.on( 'ap-request_failed', function( event, jqXHR, textStatus, errorThrown ) {
+	alert( 'Request failed. Try again.' );
+} );</code></pre><br>
+									</td>
+								</tr>
+								<tr>
+									<td><code>'ap-after_request'</code></td>
+									<td>
+										Fired after every request, successfull or not. Useful for hiding a loading icon.
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.on( 'ap-after_request', function( event, jqXHR, textStatus, errorThrown ) {
+	$( '#loading' ).hide();
+} );</code></pre><br>
+									</td>
+								</tr>
+
+								<tr class="bg-secondary text-white">
+									<td colspan="3">
+										<strong>Methods</strong>
+									</td>
+								</tr>
+								<tr>
+									<td><code>loadMore()</code></td>
+									<td>
+										Initiate a request.
+									</td>
+									<td>
+										<pre><code class="lang-js">$( '#load' ).on( 'click', function() {
+    $gallery.loadMore();
+} );</code></pre>
+									</td>
+								</tr>
+								<tr>
+									<td><code>hasMore()</code></td>
+									<td>
+										Returns boolean value.
+									</td>
+									<td>
+										<pre><code class="lang-js">if ( $gallery.hasMore() ) {
+	$( '#load' ).show();
+} else {
+	$( '#load' ).hide();
+}</code></pre>
+									</td>
+								</tr>
+								<tr>
+									<td><code>currentPage()</code></td>
+									<td>
+										Returns integer value of the current page number.
+									</td>
+									<td>
+										<pre><code class="lang-js">$( '#stats' ).text( 'Current page: ' + $gallery.currentPage() );</code></pre>
+									</td>
+								</tr>
+								<tr>
+									<td><code>resetPage()</code></td>
+									<td>
+										Reset the internal page counter to <code>0<code>
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.resetPage();</code></pre>
+									</td>
+								</tr>
+								<tr>
+									<td><code>setPage( page )</code></td>
+									<td>
+										Override the internall page counter.
+									</td>
+									<td>
+										<pre><code class="lang-markup">&lt;ul class="pagination"&gt;
+	&lt;li&gt;&lt;a href="#1"&gt;1&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href="#2"&gt;2&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href="#3"&gt;3&lt;/a&gt;&lt;/li&gt;
+	&lt;li&gt;&lt;a href="#4"&gt;4&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+										<pre><code class="lang-js">$( '.pagination a' ).on( 'click', function() {
+	$gallery.setPage( $( this ).text() );
+} );</code></pre>
+									</td>
+								</tr>
+								<tr>
+									<td><code>updateOptions( options )</code></td>
+									<td>
+										Update options that were set when originally initiating the library.
+									</td>
+									<td>
+										<pre><code class="lang-js">$gallery.updateOptions( {
+	url: 'https://example.com/api/videos'
+} );</code></pre>
+									</td>
+								</tr>
+
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="py-5 d-none" id="examples">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col my-5">
+					<h2>Examples</h2>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<script src="js/min/home.js?v=1.2.0"></script>
+</body>
+</html>
