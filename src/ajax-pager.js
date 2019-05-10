@@ -29,7 +29,7 @@
 		 * @type {Object}
 		 */
 		let trackers = {
-			currentPage: 0,
+			currentPage: 1,
 			isRunning: false
 		};
 
@@ -147,12 +147,12 @@
 		};
 
 		/**
-		 * Reset the internal page counter. Alias of `setPage( 0 )`
+		 * Reset the internal page counter. Alias of `setPage( 1 )`
 		 *
-		 * @return	{Integer}	Returns the page number ( 0 )
+		 * @return	{Integer}	Returns the first page
 		 */
 		self.resetPage = function() {
-			return self.setPage( 0 );
+			return self.setPage( 1 );
 		};
 
 		/**

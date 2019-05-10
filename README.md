@@ -8,7 +8,7 @@ Easily rig a custom DOM for ajax pagination requests.
 
 **1.** Include the plugin via jsDelivr CDN 
 ```html
-<script src=“https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.1/dist/ajax-pager.js”></script>
+<script src=“https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.2/dist/ajax-pager.js”></script>
 ```
 **2.** Attach to an element
 ```javascript
