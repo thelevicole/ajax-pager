@@ -24,7 +24,7 @@
 	<link rel="stylesheet" href="css/home.css?v=1.2.0">
 
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.2/dist/ajax-pager.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.3/dist/ajax-pager.js"></script>
 </head>
 <body>
 
@@ -41,7 +41,7 @@
 						<a href="#requirements" class="list-group-item">1. Requirements</a>
 						<a href="#usage" class="list-group-item">2. Basic usage</a>
 						<a href="#events" class="list-group-item">3. Events &amp; Methods</a>
-						<a href="#examples" class="list-group-item disabled">4. Examples <small>(coming soon)</small></a>
+						<a href="#examples" class="list-group-item">4. Examples</a>
 					</div>
 				</div>
 			</div>
@@ -67,7 +67,7 @@
 					<h2 class="mb-5">Basic usage</h2>
 					<p><strong>1.</strong> Include the library via jsDelivr CDN</p>
 					<div class="mb-5">
-						<pre><code class="lang-markup">&lt;script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.2/dist/ajax-pager.js"&gt;&lt;/script&gt;</code></pre>
+						<pre><code class="lang-markup">&lt;script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.3/dist/ajax-pager.js"&gt;&lt;/script&gt;</code></pre>
 					</div>
 
 					<p><strong>2.</strong> Attach to an element</p>
@@ -277,20 +277,22 @@ $button.on( 'click', function() {
 $pager.on( 'ap.request.done', function( event, response ) {
 	if ( response.data.length ) {
 		for ( var i = 0; i < response.data.length; i++ ) {
-			var item = response.data[ i ];
-			$pager.append( '&lt;div&gt;&lt;h3&gt;' + item.first_name + '' + item.last_name + '&lt;/h3&gt;&lt;/div&gt;' );
+			var user = response.data[ i ];
+			$pager.append( '&lt;div&gt;&lt;h3&gt;' + user.first_name + '' + user.last_name + '&lt;/h3&gt;&lt;/div&gt;' );
 		}
 	}
 } );</code></pre>
 					<!-- End : JavaScript -->
 
 					<!-- Start : Playground -->
-					<p class="h6">Playground</p>
+					<p class="h6 mt-4">Playground</p>
 					<div class="playground">
 						<div id="users">
 							<div class="row"></div>
 						</div>
-						<button id="loadmore" type="button">Load more</button>
+						<div class="text-center">
+							<button id="loadmore" type="button" class="btn btn-primary">Load more</button>
+						</div>
 						<script>
 							( function() {
 								'use strict';
@@ -313,10 +315,11 @@ $pager.on( 'ap.request.done', function( event, response ) {
 												'<div class="col-md-4 my-2">',
 													'<div class="card text-center">',
 														'<div class="card-header">',
-															user.first_name + '' + user.last_name,
+															user.first_name + ' ' + user.last_name,
 														'</div>',
 														'<div class="card-body">',
 															'<img src="' + user.avatar + '" class="img-fluid rounded-circle">',
+															'<strong class="d-block">' + user.email + '</strong>',
 														'</div>',
 													'</div>',
 												'</div>'
@@ -324,6 +327,20 @@ $pager.on( 'ap.request.done', function( event, response ) {
 
 											$pager.append( html.join( '' ) );
 										}
+									}
+								} );
+
+								$pager.on( 'ap.request.start', function() {
+									$button.text( 'Loading...' ).prop( 'disabled', true );
+								} );
+
+								$pager.on( 'ap.request.finally', function() {
+									$button.text( 'Load more' ).prop( 'disabled', false );
+
+									if ( $pager.hasMore() ) {
+										$button.show();
+									} else {
+										$button.hide();
 									}
 								} );
 							} )();
