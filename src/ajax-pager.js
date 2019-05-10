@@ -54,7 +54,7 @@
 		 */
 		const payload = () => {
 			return $.extend( options.data, {
-				[ options.page ]: self.currentPage()
+				[ options.field ]: self.currentPage()
 			} );
 		};
 
