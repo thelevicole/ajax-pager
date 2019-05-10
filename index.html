@@ -20,11 +20,11 @@
 	<meta name="twitter:description" content="">
 	<meta name="twitter:image" content="">
 
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.css">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel="stylesheet" href="css/home.css?v=1.2.0">
 
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.0/dist/ajax-pager.js"></script>
+	<script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.1/dist/ajax-pager.js"></script>
 </head>
 <body>
 
@@ -245,7 +245,7 @@ $gallery.on( 'ap.request.done', function( event, response ) {
 		</div>
 	</section>
 
-	<section class="py-5 d-none" id="examples">
+	<section class="py-5" id="examples">
 		<div class="container">
 			<div class="row justify-content-center">
 				<div class="col my-5">
@@ -287,13 +287,15 @@ $pager.on( 'ap.request.done', function( event, response ) {
 					<!-- Start : Playground -->
 					<p class="h6">Playground</p>
 					<div class="playground">
-						<div id="users"></div>
+						<div id="users">
+							<div class="row"></div>
+						</div>
 						<button id="loadmore" type="button">Load more</button>
 						<script>
 							( function() {
 								'use strict';
 								var $button = $( '#loadmore' );
-								var $pager = $( '#users' ).ajaxPager( {
+								var $pager = $( '#users .row' ).ajaxPager( {
 									url: 'https://reqres.in/api/users',
 									totalPages: 4
 								} );
@@ -305,8 +307,22 @@ $pager.on( 'ap.request.done', function( event, response ) {
 								$pager.on( 'ap.request.done', function( event, response ) {
 									if ( response.data.length ) {
 										for ( var i = 0; i < response.data.length; i++ ) {
-											var item = response.data[ i ];
-											$pager.append( '<div><h3>' + item.first_name + '' + item.last_name + '</h3></div>' );
+											var user = response.data[ i ];
+
+											var html = [
+												'<div class="col-md-4 my-2">',
+													'<div class="card text-center">',
+														'<div class="card-header">',
+															user.first_name + '' + user.last_name,
+														'</div>',
+														'<div class="card-body">',
+															'<img src="' + user.avatar + '" class="img-fluid rounded-circle">',
+														'</div>',
+													'</div>',
+												'</div>'
+											];
+
+											$pager.append( html.join( '' ) );
 										}
 									}
 								} );
