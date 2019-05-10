@@ -24,7 +24,7 @@
 	<link rel="stylesheet" href="css/home.css?v=1.2.0">
 
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-	<script src=“https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@0.3.3/dist/ajax-pager.js”></script>
+	<script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.0/dist/ajax-pager.js"></script>
 </head>
 <body>
 
@@ -67,7 +67,7 @@
 					<h2 class="mb-5">Basic usage</h2>
 					<p><strong>1.</strong> Include the library via jsDelivr CDN</p>
 					<div class="mb-5">
-						<pre><code class="lang-markup">&lt;script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@0.3.3/dist/ajax-pager.js"&gt;&lt;/script&gt;</code></pre>
+						<pre><code class="lang-markup">&lt;script src="https://cdn.jsdelivr.net/gh/thelevicole/ajax-pager@1.0.0/dist/ajax-pager.js"&gt;&lt;/script&gt;</code></pre>
 					</div>
 
 					<p><strong>2.</strong> Attach to an element</p>
@@ -86,7 +86,7 @@
     $gallery.loadMore();
 } );
 
-$gallery.on( 'ap-request_successful', function( event, response ) {
+$gallery.on( 'ap.request.done', function( event, response ) {
     $gallery.append( response.html );
 } );</code></pre>
 				</div>
@@ -116,45 +116,45 @@ $gallery.on( 'ap-request_successful', function( event, response ) {
 									</td>
 								</tr>
 								<tr>
-									<td><code>'ap-before_request'</code></td>
+									<td><code>'ap.request.start'</code></td>
 									<td>
 										Fired before a request is made. Useful for showing a loading icon.
 									</td>
 									<td>
-										<pre><code class="lang-js">$gallery.on( 'ap-before_request', function() {
+										<pre><code class="lang-js">$gallery.on( 'ap.request.start', function() {
 	$( '#loading' ).show();
 } );</code></pre><br>
 									</td>
 								</tr>
 								<tr>
-									<td><code>'ap-request_successful'</code></td>
+									<td><code>'ap.request.done'</code></td>
 									<td>
 										Fired right after a request has successully completed.
 									</td>
 									<td>
-										<pre><code class="lang-js">$gallery.on( 'ap-request_successful', function( event, data, textStatus, jqXHR ) {
+										<pre><code class="lang-js">$gallery.on( 'ap.request.done', function( event, data, textStatus, jqXHR ) {
 	$gallery.append( data.html );
 } );</code></pre><br>
 									</td>
 								</tr>
 								<tr>
-									<td><code>'ap-request_failed'</code></td>
+									<td><code>'ap.request.catch'</code></td>
 									<td>
 										Fired if a request failed.
 									</td>
 									<td>
-										<pre><code class="lang-js">$gallery.on( 'ap-request_failed', function( event, jqXHR, textStatus, errorThrown ) {
+										<pre><code class="lang-js">$gallery.on( 'ap.request.catch', function( event, jqXHR, textStatus, errorThrown ) {
 	alert( 'Request failed. Try again.' );
 } );</code></pre><br>
 									</td>
 								</tr>
 								<tr>
-									<td><code>'ap-after_request'</code></td>
+									<td><code>'ap.request.finally'</code></td>
 									<td>
 										Fired after every request, successfull or not. Useful for hiding a loading icon.
 									</td>
 									<td>
-										<pre><code class="lang-js">$gallery.on( 'ap-after_request', function( event, jqXHR, textStatus, errorThrown ) {
+										<pre><code class="lang-js">$gallery.on( 'ap.request.finally', function( event, jqXHR, textStatus, errorThrown ) {
 	$( '#loading' ).hide();
 } );</code></pre><br>
 									</td>
@@ -251,6 +251,70 @@ $gallery.on( 'ap-request_successful', function( event, response ) {
 				<div class="col my-5">
 					<h2>Examples</h2>
 				</div>
+			</div>
+			<div class="card mb-5">
+				<div class="card-header">Common usage</div>
+				<div class="card-body">
+					
+					<!-- Start : HTML -->
+					<p class="h6">HTML</p>
+					<pre><code class="lang-markup">&lt;div id="users"&gt;&lt;/div&gt;
+	&lt;button id="loadmore" type="button"&gt;Load more&lt;/button&gt;</code></pre>
+					<!-- End : HTML -->
+
+					<!-- Start : JavaScript -->
+					<p class="h6">JavaScript</p>
+					<pre><code class="lang-js">var $button = $( '#loadmore' );
+var $pager = $( '#users' ).ajaxPager( {
+	url: 'https://reqres.in/api/users',
+	totalPages: 4
+} );
+
+$button.on( 'click', function() {
+	$pager.loadMore();
+} );
+
+$pager.on( 'ap.request.done', function( event, response ) {
+	if ( response.data.length ) {
+		for ( var i = 0; i < response.data.length; i++ ) {
+			var item = response.data[ i ];
+			$pager.append( '&lt;div&gt;&lt;h3&gt;' + item.first_name + '' + item.last_name + '&lt;/h3&gt;&lt;/div&gt;' );
+		}
+	}
+} );</code></pre>
+					<!-- End : JavaScript -->
+
+					<!-- Start : Playground -->
+					<p class="h6">Playground</p>
+					<div class="playground">
+						<div id="users"></div>
+						<button id="loadmore" type="button">Load more</button>
+						<script>
+							( function() {
+								'use strict';
+								var $button = $( '#loadmore' );
+								var $pager = $( '#users' ).ajaxPager( {
+									url: 'https://reqres.in/api/users',
+									totalPages: 4
+								} );
+
+								$button.on( 'click', function() {
+									$pager.loadMore();
+								} );
+
+								$pager.on( 'ap.request.done', function( event, response ) {
+									if ( response.data.length ) {
+										for ( var i = 0; i < response.data.length; i++ ) {
+											var item = response.data[ i ];
+											$pager.append( '<div><h3>' + item.first_name + '' + item.last_name + '</h3></div>' );
+										}
+									}
+								} );
+							} )();
+						</script>
+					</div>
+					<!-- End : Playground -->
+
 			</div>
 		</div>
 	</section>
