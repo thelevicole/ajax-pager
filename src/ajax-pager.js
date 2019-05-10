@@ -1,95 +1,105 @@
 /**
- * Simple jQuery plugin for handling ajax paging v0.3.3
+ * Simple jQuery plugin for handling ajax paging v1.0.0
  *
  * Copyright (c) 2018 Levi Cole <me@thelevicole.com>
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
-(function($) {
+( function( $ ) {
 	'use strict';
 
-	$.fn.ajaxPager = function( options ) {
-		const self = this;
-
-		/**
-		 * Track current page number
-		 * @type {Number}
-		 */
-		let current_page = 0;
-
-		/**
-		 * Check if request has already been made
-		 * @type {Boolean}
-		 */
-		let running = false;
+	$.fn.ajaxPager = function( options = {} ) {
+		let self = this;
 
 		/**
 		 * Merge user settings with defaults
-		 * @type	{object}
+		 * 
+		 * @type {Object}
 		 */
 		options = $.extend( true, {
-			data: {}, // Data to send with the request
-			url: '', // Request uri
-			totalPages: 0, // At what point should we stop loading more
+			totalPages: 1,		// At what point should we stop loading more
+			data: {}, 			// Data to send with the request
+			url: '',			// Request uri
+			method: 'GET',		// Request type, get/post..etc
+			field: 'page'		// The name of the variable sent with the request
 		}, options );
+
+		/**
+		 * Internal global variable trackers
+		 * 
+		 * @type {Object}
+		 */
+		let trackers = {
+			currentPage: 0,
+			isRunning: false
+		};
+
+		/* Private functions
+		-------------------------------------------------------- */
 
 		/**
 		 * Trigger an event on the element
 		 *
-		 * @param	{string}	event_name	Name will be prefixed
-		 * @param	{mixed}		data...		Arguments will be passed on the event
-		 * @return	{void}
+		 * @param	{String}	name		Name will be prefixed
+		 * @param	{Mixed}		...data		Arguments will be passed on the event
+		 * @return	{Void}
 		 */
-		const trigger = ( event_name, ...args ) => {
-			self.trigger( `ap-${event_name}`, ...args );
+		const trigger = ( name, ...args ) => {
+			self.trigger( `ap.${name}`, ...args );
 		};
 
 		/**
 		 * Merge plugin data with data passed in options
 		 *
-		 * @return	{object}
+		 * @return	{Object}
 		 */
-		const data_to_send = () => {
+		const payload = () => {
 			return $.extend( options.data, {
-				current_page: self.currentPage()
+				[ options.page ]: self.currentPage()
 			} );
 		};
 
 		/**
 		 * Handle the ajax request to the server
 		 *
-		 * @return {void}
+		 * @return {Void}
 		 */
-		const send_request = ( ...args ) => {
-
+		const sendRequest = ( data = {}, ...args ) => {
+			// Check if we have more pages to load
 			if ( self.hasMore() ) {
 
-				if ( !running ) {
-					running = true;
+				// If request is not already running
+				if ( !trackers.running ) {
 
-					trigger( 'before_request', ...args );
+					// Set running tracker
+					trackers.running = true;
 
+					// Send event
+					trigger( 'request.before', ...args );
+
+					// Make request
 					$.ajax( {
-						method: 'POST',
+						method: options.method || 'GET',
 						url: options.url,
-						data: data_to_send()
-					} ).then( function( data, textStatus, jqXHR ) {
+						data: payload()
+					} )
 
-						current_page++;
-						trigger( 'request_successful', data, textStatus, jqXHR, ...args );
+					// If request was successful
+					.then( function( data, textStatus, jqXHR ) {
+						trackers.currentPage++;
+						trigger( 'request.done', data, textStatus, jqXHR, ...args );
+					} )
 
-					}, function( jqXHR, textStatus, errorThrown ) {
+					// If request failed
+					.fail( function( jqXHR, textStatus, errorThrown ) {
+						trigger( 'request.catch', jqXHR, textStatus, errorThrown, ...args );
+					} )
 
-						trigger( 'request_failed', jqXHR, textStatus, errorThrown, ...args );
-
-					} ).always( function() {
-
-						running = false;
-
-						trigger( 'after_request', ...args );
-
+					// Always run
+					.always( function() {
+						trackers.running = false;
+						trigger( 'request.finally', ...args );
 					} );
 				}
-
 			}
 		};
 
@@ -97,79 +107,82 @@
 		-------------------------------------------------------- */
 
 		/**
-		 * Trigger the ajax request
+		 * Return the current page
 		 *
-		 * @return	{void}
+		 * @return	{Integer}
 		 */
-		self.loadMore = function( ...args ) {
-			send_request( ...args );
+		self.currentPage = function() {
+			return trackers.currentPage;
 		};
 
 		/**
 		 * Check if there are any more pages to load
 		 *
-		 * @return {boolean}
+		 * @return {Boolean}
 		 */
 		self.hasMore = function() {
 			return self.currentPage() < options.totalPages;
 		};
 
 		/**
-		 * Return the current page
+		 * Send the ajax request
 		 *
-		 * @return	{integer}
+		 * @return	{Void}
 		 */
-		self.currentPage = function() {
-			return current_page;
+		self.loadMore = function( data, ...args ) {
+			sendRequest( data, ...args );
 		};
 
 		/**
-		 * Reset the counter
+		 * Manually override the current page count
 		 *
-		 * @return	{integer}	Returns the page number ( 0 )
+		 * @param	{Integer}	page
+		 * @return	{Integer}			The current page number
+		 */
+		self.setPage = function( page ) {
+			if ( !isNaN( page ) ) {
+				trackers.currentPage = parseInt( page );
+			}
+			return trackers.currentPage;
+		};
+
+		/**
+		 * Reset the internal page counter. Alias of `setPage( 0 )`
+		 *
+		 * @return	{Integer}	Returns the page number ( 0 )
 		 */
 		self.resetPage = function() {
 			return self.setPage( 0 );
 		};
 
 		/**
-		 * Manually override the current page count
-		 *
-		 * @param	{integer}	page
-		 * @return	{integer}			The current page number
-		 */
-		self.setPage = function( page ) {
-			if ( !isNaN( page ) ) {
-				current_page = parseInt( page );
-			}
-			return current_page;
-		};
-
-		/**
 		 * Update the initial post data
 		 *
-		 * @param	{object}	updated
-		 * @return	{void}
+		 * @param	{Object}	_data
+		 * @return	{Object}
 		 */
-		self.updatePayload = function( updated ) {
-			options.data = $.extend( options.data, updated );
+		self.updatePayload = function( _data ) {
+			options.data = $.extend( options.data, _data );
+			return options.data;
 		};
 
 		/**
 		 * Update the initial options
 		 *
-		 * @param	{object}	updated
-		 * @return	{void}
+		 * @param	{Object}	_options
+		 * @return	{Object}
 		 */
-		self.updateOptions = function( updated ) {
-			// Preserve payload
-			const data = options.data;
+		self.updateOptions = function( _options ) {
+			// Preserve and update payload
+			const data = self.updatePayload( _options.data || {} );
 
 			// Update opitons
-			options = $.extend( options, updated );
+			options = $.extend( options, _options );
 
 			// Restore preserved payload
 			self.updatePayload( data );
+
+			return options;
 		};
 
 		/* On initialize
@@ -187,4 +200,4 @@
 		return self;
 	};
 
-})(jQuery || window.jQuery);
+} )( jQuery || window.jQuery );
